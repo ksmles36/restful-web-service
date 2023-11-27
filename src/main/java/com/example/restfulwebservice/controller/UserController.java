@@ -44,5 +44,15 @@ public class UserController {
         return ResponseEntity.created(location).build();
     }
 
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity deleteUser(@PathVariable int id) {
+        User deletedUser = userDaoService.deleteById(id);
+
+        if(deletedUser == null)
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+
+        return ResponseEntity.noContent().build(); //성공응답이라도 상황에 맞게 status 응답해주는 것이 바람직함.
+    }
+
 
 }
