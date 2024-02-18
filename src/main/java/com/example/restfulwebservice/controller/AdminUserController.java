@@ -58,7 +58,6 @@ public class AdminUserController {
     public MappingJacksonValue retrieveUserForAdminV2(@PathVariable int id) {
         User user = userDaoService.findOne(id);
 
-        AdminUserV2 adminUserV2 = new AdminUserV2();
 
         if (user == null){
             throw new UserNotFoundException(String.format("ID[%s] not found", id));
