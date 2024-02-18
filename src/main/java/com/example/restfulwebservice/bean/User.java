@@ -24,4 +24,6 @@ public class User {
 //    @JsonIgnore
     private String ssn;
 
+    private String grade;
+
 }
