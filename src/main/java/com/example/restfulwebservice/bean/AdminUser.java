@@ -1,17 +1,19 @@
 package com.example.restfulwebservice.bean;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonFilter;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
 @AllArgsConstructor
-@JsonIgnoreProperties(value = {"password", "ssn"})
-public class User {
+@NoArgsConstructor
+@JsonFilter("UserInfo")
+public class AdminUser {
 
     private Integer id;
     @Size(min = 2, message = "Name은 2글자 이상 입력해주세요.")
