@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +27,7 @@ public class AdminUserController {
     private final UserDaoService userDaoService;
 
     @GetMapping("/users/{id}")
-    public AdminUser retrieveUserForAdmin(@PathVariable int id) {
+    public MappingJacksonValue retrieveUserForAdmin(@PathVariable int id) {
         User user = userDaoService.findOne(id);
 
         AdminUser adminUser = new AdminUser();
@@ -40,7 +43,30 @@ public class AdminUserController {
         MappingJacksonValue mapping = new MappingJacksonValue(adminUser);
         mapping.setFilters(filters);
 
-        return adminUser;
+        return mapping;
     }
+
+    @GetMapping("/users")
+    public MappingJacksonValue retrieveAllUsersForAdmin() {
+        List<User> users = userDaoService.findAll();
+
+        List<AdminUser> adminUsers = new ArrayList<>();
+
+        for (User user : users) {
+            AdminUser adminUser = new AdminUser();
+            BeanUtils.copyProperties(user, adminUser);
+            adminUsers.add(adminUser);
+        }
+
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name", "joinDate", "password", "ssn");
+        SimpleFilterProvider filterProvider = new SimpleFilterProvider().addFilter("UserInfo", filter);
+
+        MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(adminUsers);
+        mappingJacksonValue.setFilters(filterProvider);
+
+        return mappingJacksonValue;
+    }
+
+
 
 }
