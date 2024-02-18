@@ -27,7 +27,10 @@ public class AdminUserController {
 
     private final UserDaoService userDaoService;
 
-    @GetMapping("/v1/users/{id}")
+//    @GetMapping("/v1/users/{id}")
+//    @GetMapping(value = "/users/{id}", params = "version=1")
+//    @GetMapping(value = "/users/{id}", headers = "X-API-VERSION=1")
+    @GetMapping(value = "/users/{id}", produces = "application/ksm.company.appv1+json")
     public MappingJacksonValue retrieveUserForAdmin(@PathVariable int id) {
         User user = userDaoService.findOne(id);
 
@@ -43,6 +46,30 @@ public class AdminUserController {
         FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);
 
         MappingJacksonValue mapping = new MappingJacksonValue(adminUser);
+        mapping.setFilters(filters);
+
+        return mapping;
+    }
+
+    //    @GetMapping("/v2/users/{id}")
+//    @GetMapping(value = "/users/{id}", params = "version=2")
+//    @GetMapping(value = "/users/{id}", headers = "X-API-VERSION=2")
+    @GetMapping(value = "/users/{id}", produces = "application/ksm.company.appv2+json")
+    public MappingJacksonValue retrieveUserForAdminV2(@PathVariable int id) {
+        User user = userDaoService.findOne(id);
+
+        AdminUserV2 adminUserV2 = new AdminUserV2();
+
+        if (user == null){
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        } else {
+            BeanUtils.copyProperties(user, adminUserV2);
+        }
+
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name", "joinDate", "grade");
+        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfoV2", filter);
+
+        MappingJacksonValue mapping = new MappingJacksonValue(adminUserV2);
         mapping.setFilters(filters);
 
         return mapping;
@@ -69,26 +96,7 @@ public class AdminUserController {
         return mappingJacksonValue;
     }
 
-    @GetMapping("/v2/users/{id}")
-    public MappingJacksonValue retrieveUserForAdminV2(@PathVariable int id) {
-        User user = userDaoService.findOne(id);
 
-        AdminUserV2 adminUserV2 = new AdminUserV2();
-
-        if (user == null){
-            throw new UserNotFoundException(String.format("ID[%s] not found", id));
-        } else {
-            BeanUtils.copyProperties(user, adminUserV2);
-        }
-
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name", "joinDate", "grade");
-        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfoV2", filter);
-
-        MappingJacksonValue mapping = new MappingJacksonValue(adminUserV2);
-        mapping.setFilters(filters);
-
-        return mapping;
-    }
 
 
 
