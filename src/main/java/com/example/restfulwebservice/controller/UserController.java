@@ -3,6 +3,11 @@ package com.example.restfulwebservice.controller;
 import com.example.restfulwebservice.bean.User;
 import com.example.restfulwebservice.exception.UserNotFoundException;
 import com.example.restfulwebservice.service.UserDaoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
@@ -19,6 +24,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "user-controller", description = "일반 사용자 서비스를 위한 컨트롤러입니다.")
 public class UserController {
 
     private final UserDaoService userDaoService;
@@ -28,8 +34,13 @@ public class UserController {
         return userDaoService.findAll();
     }
 
+    @Operation(summary = "사용자 정보 조회 API", description = "사용자 ID를 이용해서 사용자 상세 정보 조회를 합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK 성공!!"),
+            @ApiResponse(responseCode = "400", description = "Bad Request !!")
+    })
     @GetMapping("/users/{id}")
-    public EntityModel<User> retrieveUser(@PathVariable int id) {
+    public EntityModel<User> retrieveUser(@Parameter(description = "사용자ID", required = true, example = "1") @PathVariable int id) {
         User user = userDaoService.findOne(id);
 
         if (user == null)
